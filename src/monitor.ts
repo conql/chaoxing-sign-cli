@@ -14,7 +14,7 @@ import { delay, extendGlobalThis } from './utils/helper';
 extendGlobalThis(globalThis);
 import { Activity, getPPTActiveInfo, preSign, preSign2, speculateType } from './functions/activity';
 import { GeneralSign, GeneralSign_2 } from "./functions/general";
-import { LocationSign, LocationSign_2 } from "./functions/location";
+import { LocationSign, LocationSign_2, GetTargetLocation } from "./functions/location";
 import { PhotoSign, getObjectIdFromcxPan, PhotoSign_2 } from "./functions/photo";
 import { getJsonObject, storeUser } from './utils/file';
 import { getIMParams, getLocalUsers, userLogin } from './functions/user';
@@ -193,8 +193,17 @@ async function Sign(realname: string, params: any, config: any, activity: Activi
       console.log(red('二维码签到，无法自动签到！')); break;
     }
     case 4: {
-      // 位置签到
-      result = await LocationSign(params.uf, params._d, params.vc3, realname, config.address, activity.aid, params._uid, config.lat, config.lon, params.fid); break;
+
+      try {
+        let position = await GetTargetLocation(params.uf, params._d, params.vc3, activity.aid, activity.classId, activity.courseId, params._uid);
+        // 位置签到
+        result = await LocationSign(params.uf, params._d, params.vc3, realname, position.address, activity.aid, params._uid, position.lat, position.lon, params.fid); break;
+      }
+      catch {
+        // 位置签到
+        result = await LocationSign(params.uf, params._d, params.vc3, realname, config.address, activity.aid, params._uid, config.lat, config.lon, params.fid); break;
+      }
+
     }
     case 3: {
       // 手势签到

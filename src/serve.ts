@@ -242,7 +242,7 @@ app.use(async (ctx, next) => {
 app.use(router.routes())
 
 // 若在服务器，直接运行
-if (!ENVJSON.env.SERVERLESS) app.listen(5000, () => { console.log("API Server: http://localhost:5000") })
+if (!ENVJSON.env.SERVERLESS) app.listen(5123, "localhost", () => { console.log("API Server: http://localhost:5123") })
 
 // 导出云函数
 export const main = serverless(app)

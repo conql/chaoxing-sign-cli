@@ -6,7 +6,7 @@ import jsdom from 'jsdom';
 import WebSocket from 'ws';
 import { getPPTActiveInfo, preSign, preSign2, speculateType } from './functions/activity';
 import { GeneralSign, GeneralSign_2 } from './functions/general';
-import { LocationSign, LocationSign_2 } from './functions/location';
+import { GetTargetLocation, LocationSign, LocationSign_2 } from './functions/location';
 import { PhotoSign, getObjectIdFromcxPan, PhotoSign_2 } from './functions/photo';
 import { getJsonObject, getStoredUser, storeUser } from './utils/file';
 import { getIMParams, getLocalUsers, userLogin } from './functions/user';
@@ -234,13 +234,21 @@ async function Sign(realname: string, params: UserCookieType & { tuid: string },
       break;
     }
     case 4: {
+      let location = { lat: config.lat, lon: config.lon, address: config.address };
+
+      let tloc = await GetTargetLocation({
+        ...activity,
+        ...params
+      });
+      if (tloc)
+        location = tloc;
       // 位置签到
       result = await LocationSign({
         name: realname,
-        address: config.address,
+        address: location.address,
         activeId: activity.activeId,
-        lat: config.lat,
-        lon: config.lon,
+        lat: location.lat,
+        lon: location.lon,
         ...params,
       });
       break;

@@ -2,7 +2,7 @@ import { blue, red } from 'kolorist';
 import prompts from 'prompts';
 import { getPPTActiveInfo, preSign, traverseCourseActivity } from './functions/activity';
 import { GeneralSign } from './functions/general';
-import { LocationSign } from './functions/location';
+import { GetTargetLocation, LocationSign } from './functions/location';
 import { getObjectIdFromcxPan, PhotoSign } from './functions/photo';
 import { QRCodeSign } from './functions/qrcode';
 import { getAccountInfo, getCourses, getLocalUsers, userLogin } from './functions/user';
@@ -69,20 +69,25 @@ const PromptsOptions = {
       process.exit(0);
     }
     case 4: {
-      // 位置签到
-      console.log('[获取经纬度]https://api.map.baidu.com/lbsapi/getpoint/index.html');
-      const lnglat = (
-        await prompts({ type: 'text', name: 'lnglat', message: '经纬度', initial: '113.516288,34.817038' }, PromptsOptions)
-      ).lnglat;
-      const address = (await prompts({ type: 'text', name: 'address', message: '详细地址' })).address;
-      const lat = lnglat.substring(lnglat.indexOf(',') + 1, lnglat.length);
-      const lon = lnglat.substring(0, lnglat.indexOf(','));
+      // 位置签到;
+      let location = await GetTargetLocation({ ...activity, ...params });
+      // let location = null;
+      if (!location) {
+        console.log('[获取经纬度]https://api.map.baidu.com/lbsapi/getpoint/index.html');
+        const lnglat = (
+          await prompts({ type: 'text', name: 'lnglat', message: '经纬度', initial: '113.516288,34.817038' }, PromptsOptions)
+        ).lnglat;
+        location = {
+          address: (await prompts({ type: 'text', name: 'address', message: '详细地址' })).address,
+          lat: lnglat.substring(lnglat.indexOf(',') + 1, lnglat.length),
+          lon: lnglat.substring(0, lnglat.indexOf(',')),
+        }
+      }
+
       await LocationSign({
         ...activity,
         ...params,
-        address,
-        lat,
-        lon,
+        ...location,
         name,
       });
       process.exit(0);

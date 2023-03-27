@@ -316,8 +316,8 @@ process.on('exit', () => {
 
 // 若在服务器，直接运行
 if (!ENVJSON.env.SERVERLESS)
-  app.listen(5000, () => {
-    console.log('API Server: http://localhost:5000');
+  app.listen(5381, () => {
+    console.log('API Server: http://localhost:5381');
   });
 
 // 导出云函数

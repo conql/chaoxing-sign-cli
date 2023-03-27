@@ -1,4 +1,4 @@
-const baseUrl = 'http://localhost:5000'
+const baseUrl = 'https://c.sptcs.top/api'
 
 export const login_api = baseUrl + '/login'
 
